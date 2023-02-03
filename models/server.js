@@ -6,11 +6,15 @@ const path = require("path");
 const cors = require("cors");
 
 const Sockets = require("./sockets");
+const { dbConnection } = require("../database/config");
 
 class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 5000;
+
+    // Conectar a DB
+    dbConnection();
 
     // Http server
     this.server = http.createServer(this.app);
@@ -25,6 +29,13 @@ class Server {
 
     // CORS
     this.app.use(cors());
+
+    // Parseo del body
+    this.app.use(express.json());
+
+    // API Endpoints
+    this.app.use("/api/login", require("../router/authRouter"));
+    this.app.use("/api/mensajes", require("../router/mensajesRouter"));
   }
 
   configurarSockets() {
